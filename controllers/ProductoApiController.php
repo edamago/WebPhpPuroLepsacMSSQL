@@ -33,4 +33,24 @@ class ProductoApiController
             ]);
         }
     }
+
+    public function obtenerProducto($codigo)
+{
+    $producto = $this->productoModel->obtenerProductoPorCodigo($codigo);
+
+    if ($producto) {
+        http_response_code(200);
+        echo json_encode([
+            "status" => "success",
+            "data" => $producto
+        ]);
+    } else {
+        http_response_code(404);
+        echo json_encode([
+            "status" => "error",
+            "message" => "Producto no encontrado."
+        ]);
+    }
+}
+
 }
