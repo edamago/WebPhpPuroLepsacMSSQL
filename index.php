@@ -4,28 +4,38 @@ header("Content-Type: application/json; charset=UTF-8");
 
 $request = $_SERVER["REQUEST_URI"];
 
-// Normalizar la ruta para que siempre empiece igual
-// Ejemplo: /pro-back/api/productos/216374MOE
-$baseApi = "/pro-back/api/productos";
+// Normalizar las rutas base
+$baseApiProductos = "/pro-back/api/productos";
+$baseApiClientes = "/pro-back/api/clientes";
+$baseApiComprobantes = "/pro-back/api/comprobantes";
 
-if (strpos($request, "/pro-back/api/comprobantes") === 0) {
+if (strpos($request, $baseApiComprobantes) === 0) {
     require_once __DIR__ . "/routes/comprobante/listar.php";
-} elseif (strpos($request, $baseApi) === 0) {
+} elseif (strpos($request, $baseApiProductos) === 0) {
     // Extraer lo que sigue después de /pro-back/api/productos
-    $rest = substr($request, strlen($baseApi)); // Ejemplo: /216374MOE o vacío si listamos todos
+    $rest = substr($request, strlen($baseApiProductos)); // Ejemplo: /216374MOE o vacío
 
     if ($rest === '' || $rest === '/') {
         // Listar todos los productos
         require_once __DIR__ . "/routes/producto/listar.php";
     } else {
-        // Quitamos la barra inicial /
+        // Quitar la barra inicial /
         $codigo = ltrim($rest, '/');
-
-        // Pasamos $codigo a la ruta que devolverá un solo producto
-        // Para que esta ruta tenga acceso a $codigo, lo definimos como GET o global aquí
         $_GET['codigo'] = $codigo;
-
         require_once __DIR__ . "/routes/producto/obtener.php";
+    }
+} elseif (strpos($request, $baseApiClientes) === 0) {
+    // Extraer lo que sigue después de /pro-back/api/clientes
+    $rest = substr($request, strlen($baseApiClientes)); // Ejemplo: /104XXXXXX o vacío
+
+    if ($rest === '' || $rest === '/') {
+        // Listar todos los clientes
+        require_once __DIR__ . "/routes/cliente/listar.php";
+    } else {
+        // Quitar la barra inicial /
+        $documento = ltrim($rest, '/');
+        $_GET['documento'] = $documento;
+        require_once __DIR__ . "/routes/cliente/obtener.php";
     }
 } else {
     http_response_code(404);
